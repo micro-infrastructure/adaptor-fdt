@@ -1,0 +1,70 @@
+if [ $# -lt 1 ]; then
+	exit -1
+fi
+
+pull=false
+port=3000
+host=''
+remote_file=''
+local_file=''
+src=$1
+dst=$2
+
+while IFS=':' read -ra ADDR; do
+	  len=${#ADDR[@]}
+	  cnt=1
+	  if [ $len -gt 1 ]; then
+		  pull=true
+		  local_file=$2
+		  for i in "${ADDR[@]}"; do
+			  # process "$i"
+			  if [ $cnt == 1 ]; then
+				  host=$i
+			  fi
+			  if [[ $cnt == 2 && $len == 3 ]]; then
+				  port=$i
+			  fi
+			  if [[ $cnt == 2 && $len == 2 ]]; then
+				  remote_file=$i
+			  fi
+			  if [[ $cnt == 3 && $len == 3 ]]; then
+				  remote_file=$i
+			  fi
+			  cnt=$(($cnt+1))
+		  done
+	  fi
+done <<< "$src"
+
+while IFS=':' read -ra ADDR; do
+	  len=${#ADDR[@]}
+	  cnt=1
+	  if [ $len -gt 1 ]; then
+		  pull=false
+		  local_file=$1
+		  for i in "${ADDR[@]}"; do
+			  # process "$i"
+			  if [ $cnt == 1 ]; then
+				  host=$i
+			  fi
+			  if [[ $cnt == 2 && $len == 3 ]]; then
+				  port=$i
+			  fi
+			  if [[ $cnt == 2 && $len == 2 ]]; then
+				  remote_file=$i
+			  fi
+			  if [[ $cnt == 3 && $len == 3 ]]; then
+				  remote_file=$i
+			  fi
+			  cnt=$(($cnt+1))
+		  done
+	  fi
+done <<< "$dst"
+
+if [ $pull == "true" ]; then
+	echo "java -jar fdt.jar -c $host -p $port -d $local_file $remote_file -pull"
+	java -jar fdt.jar -c $host -p $port -d $local_file $remote_file -pull
+else
+	echo "java -jar fdt.jar -c $host -p $port -d $local_file $remote_file"
+	java -jar fdt.jar -c $host -p $port -d $remote_file $local_file
+fi
+

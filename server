@@ -1,0 +1,8 @@
+port=3000
+if [ -n "$1" ];then
+	port=$1
+	echo "set port $port"
+fi
+
+echo "java -jar fdt.jar -p $port"
+java -jar fdt.jar -p $port

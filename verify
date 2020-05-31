@@ -1,0 +1,10 @@
+if [ $# -lt 1 ]; then
+	exit -1
+fi
+
+FILE=$1
+if [ -f "$FILE" ]; then
+    md5sum $FILE | awk '{print $1}'
+else
+	exit -1
+fi
